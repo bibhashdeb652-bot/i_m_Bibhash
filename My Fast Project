@@ -1,0 +1,158 @@
+import turtle
+import math
+import time
+
+# -----------------------------
+# Window setup
+# -----------------------------
+screen = turtle.Screen()
+screen.setup(width=1000, height=650)
+screen.title("Moving Indian National Flag")
+screen.bgcolor("skyblue")
+screen.tracer(0)
+
+# Drawing turtle
+pen = turtle.Turtle()
+pen.hideturtle()
+pen.speed(0)
+
+# -----------------------------
+# Flag dimensions
+# -----------------------------
+FLAG_WIDTH = 600
+FLAG_HEIGHT = 400
+STRIPE_HEIGHT = FLAG_HEIGHT / 3
+
+# -----------------------------
+# Draw one wavy stripe
+# -----------------------------
+def draw_wavy_stripe(y, height, color, wave):
+    pen.penup()
+
+    # Top edge
+    points_top = []
+    points_bottom = []
+
+    for x in range(-FLAG_WIDTH // 2, FLAG_WIDTH // 2 + 1, 5):
+        yy = y + wave * math.sin((x + frame * 5) / 45)
+        points_top.append((x, yy + height / 2))
+
+    for x in range(FLAG_WIDTH // 2, -FLAG_WIDTH // 2 - 1, -5):
+        yy = y + wave * math.sin((x + frame * 5) / 45)
+        points_bottom.append((x, yy - height / 2))
+
+    # Fill shape
+    pen.goto(points_top[0])
+    pen.pendown()
+    pen.fillcolor(color)
+    pen.begin_fill()
+
+    for point in points_top:
+        pen.goto(point)
+
+    for point in points_bottom:
+        pen.goto(point)
+
+    pen.goto(points_top[0])
+    pen.end_fill()
+    pen.penup()
+
+
+# -----------------------------
+# Draw Ashoka Chakra
+# -----------------------------
+def draw_chakra(wave):
+    # Approximate position in the middle of the flag
+    cx = 0
+    cy = wave * math.sin((cx + frame * 5) / 45)
+
+    radius = 55
+
+    pen.penup()
+    pen.goto(cx, cy - radius)
+    pen.pendown()
+    pen.pencolor("navy")
+    pen.pensize(4)
+    pen.circle(radius)
+    pen.penup()
+
+    # 24 spokes
+    for i in range(24):
+        angle = math.radians(i * 15)
+
+        x1 = cx + 8 * math.cos(angle)
+        y1 = cy + 8 * math.sin(angle)
+
+        x2 = cx + radius * math.cos(angle)
+        y2 = cy + radius * math.sin(angle)
+
+        pen.goto(x1, y1)
+        pen.pendown()
+        pen.goto(x2, y2)
+        pen.penup()
+
+
+# -----------------------------
+# Flag pole
+# -----------------------------
+def draw_pole():
+    pen.penup()
+    pen.goto(-FLAG_WIDTH // 2 - 15, -250)
+    pen.pendown()
+
+    pen.pencolor("gray")
+    pen.pensize(12)
+    pen.goto(-FLAG_WIDTH // 2 - 15, 220)
+
+    # Pole top
+    pen.penup()
+    pen.goto(-FLAG_WIDTH // 2 - 15, 220)
+    pen.dot(25, "gold")
+
+
+# -----------------------------
+# Animation
+# -----------------------------
+frame = 0
+
+while True:
+    pen.clear()
+
+    draw_pole()
+
+    # Wave strength
+    wave = 18 + 8 * math.sin(frame / 10)
+
+    # Flag position
+    flag_y = 20
+
+    # Three Indian flag stripes
+    draw_wavy_stripe(
+        flag_y + STRIPE_HEIGHT,
+        STRIPE_HEIGHT,
+        "#FF9933",
+        wave
+    )
+
+    draw_wavy_stripe(
+        flag_y,
+        STRIPE_HEIGHT,
+        "white",
+        wave
+    )
+
+    draw_wavy_stripe(
+        flag_y - STRIPE_HEIGHT,
+        STRIPE_HEIGHT,
+        "#138808",
+        wave
+    )
+
+    # Ashoka Chakra
+    draw_chakra(wave)
+
+    # Update screen
+    screen.update()
+
+    frame += 1
+    time.sleep(0.03)
